@@ -1,25 +1,33 @@
-
+.gitignore
+package-lock.json
+package.json
+public
+README.md
+src
+tailwind.config.js
 ===========================================================
 src\api\cartApi.js
 ===========================================================
-import jwtAxios from "../util/jwtUtil"
-import { API_SERVER_HOST } from "./todoApi"
+import {API_SERVER_HOST} from "./todoApi";
+import jwtAxios from "../util/jwtUtil";
+
 
 const host = `${API_SERVER_HOST}/api/cart`
 
-export const getCartItems = async ( ) => {
+export const getCartItems = async () => {
 
-  const res = await jwtAxios.get(`${host}/items`)
+    const res = await jwtAxios.get(`${host}/items`)
 
-  return res.data
+    return res.data
 
 }
 
 export const postChangeCart = async (cartItem) => {
 
-  const res = await jwtAxios.post(`${host}/change`, cartItem)
+    const res = await jwtAxios.post(`${host}/change`, cartItem)
 
-  return res.data
+    return res.data
+
 }
 
 
@@ -30,7 +38,7 @@ import axios from "axios";
 
 import { API_SERVER_HOST } from "./todoApi";
 
-const rest_api_key =`aaaaaaaaaaaaaaaaaa` //REST키값 
+const rest_api_key =`cee3e5486b5f09776d12b5bb67e1e2e3` //REST키값
 
 const redirect_uri =`http://localhost:3000/member/kakao`
 
@@ -268,8 +276,9 @@ src\App.js
 ===========================================================
 import {RouterProvider} from "react-router-dom";
 import root from "./router/root";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+
 
 const queryClient = new QueryClient()
 
@@ -277,10 +286,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
 
-      <RouterProvider router={root}/>  
+      <RouterProvider router={root}/>
 
-      <ReactQueryDevtools initialIsOpen={true} />
-    
+      <ReactQueryDevtools initialIsOpen={true}></ReactQueryDevtools>
+
     </QueryClientProvider>
   );
 }
@@ -304,25 +313,25 @@ test('renders learn react link', () => {
 ===========================================================
 src\atoms\cartState.js
 ===========================================================
-import { atom, selector } from "recoil";
+import {atom, selector} from "recoil";
 
 export const cartState = atom({
-  key:'cartState',
-  default:[]
+    key:'cartState',
+    default:[]
 })
 
 export const cartTotalState = selector( {
-  key: "cartTotalState",
-  get: ( {get} ) => {
+    key: "cartTotalState",
+    get: ( {get} ) => {
 
-    const arr = get(cartState)
+        const arr = get(cartState)
 
-    const initialValue = 0
+        const initialValue = 0
 
-    const total = arr.reduce((total , current) => total + current.price * current.qty , initialValue)
+        const total = arr.reduce((total , current) => total + current.price * current.qty , initialValue)
 
-    return total
-  }
+        return total
+    }
 })
 
 
@@ -333,28 +342,28 @@ import { atom } from "recoil";
 import { getCookie } from "../util/cookieUtil";
 
 const initState = {
-  email:'',
-  nickname:'',
-  social: false,
-  accessToken:'',
-  refreshToken:''
+    email:'',
+    nickname:'',
+    social: false,
+    accessToken:'',
+    refreshToken:''
 }
 
-const loadMemberCookie = () => { //쿠키에서 체크 
+const loadMemberCookie = () => { //쿠키에서 체크
 
-  const memberInfo =  getCookie("member")
+    const memberInfo =  getCookie("member")
 
-  //닉네임 처리 
-  if(memberInfo && memberInfo.nickname) {
-    memberInfo.nickname = decodeURIComponent(memberInfo.nickname)
-  }
+    //닉네임 처리
+    if(memberInfo && memberInfo.nickname) {
+        memberInfo.nickname = decodeURIComponent(memberInfo.nickname)
+    }
 
-  return memberInfo
+    return memberInfo
 }
 
 const signinState = atom({
-  key:'signinState',
-  default: loadMemberCookie() || initState
+    key:'signinState',
+    default: loadMemberCookie() || initState
 })
 
 
@@ -364,74 +373,71 @@ export default signinState
 ===========================================================
 src\components\cart\CartItemComponent.js
 ===========================================================
-import { API_SERVER_HOST } from "../../api/todoApi";
+import React from 'react';
+import {API_SERVER_HOST} from "../../api/todoApi";
 
 const host = API_SERVER_HOST
+function CartItemComponent({cino, pname, price, pno, qty, imageFile,changeCart, email}) {
 
-const CartItemComponent = ({cino, pname, price, pno, qty, imageFile, changeCart, email}) => {
+    const handleClickQty = (amount) => {
 
-  const handleClickQty = (amount) => {
+        changeCart({email:email, cino:cino, pno: pno, qty: qty + amount})
 
-    changeCart({ email, cino, pno, qty: qty + amount})
+    }
 
-  }
+    return (
+        <li key={cino} className="border-2">
+            <div className="w-full border-2">
+                <div className=" m-1 p-1 ">
+                    <img src={`${host}/api/products/view/s_${imageFile}`}/>
+                </div>
 
-
-  return (  
-  <li key={cino} className="border-2">
-      <div className="w-full border-2">
-        <div className=" m-1 p-1 ">
-          <img src={`${host}/api/products/view/s_${imageFile}`}/>
-        </div>
-        
-        <div className="justify-center p-2 text-xl ">
-          <div className="justify-end w-full">
-           
-          </div>
-          <div>Cart Item No: {cino}</div>
-          <div>Pno: {pno}</div>
-          <div>Name: {pname}</div>
-          <div>Price: {price}</div>
-          <div className="flex ">
-            <div className="w-2/3">
-              Qty: {qty}
+                <div className="justify-center p-2 text-xl ">
+                    <div className="justify-end w-full">
+                    </div>
+                    <div>Cart Item No: {cino}</div>
+                    <div>Pno: {pno}</div>
+                    <div>Name: {pname}</div>
+                    <div>Price: {price}</div>
+                    <div className="flex ">
+                        <div className="w-2/3">
+                            Qty: {qty}
+                        </div>
+                        <div>
+                            <button
+                                className="m-1 p-1 text-2xl bg-orange-500 w-8 rounded-lg"
+                                onClick={() => handleClickQty(1)}
+                            >
+                                +
+                            </button>
+                            <button
+                                className="m-1 p-1 text-2xl bg-orange-500 w-8 rounded-lg"
+                                onClick={() => handleClickQty(-1)}
+                            >
+                                -
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="flex text-white font-bold p-2 justify-center">
+                            <button
+                                className="m-1 p-1 text-xl text-white bg-red-500 w-8 rounded-lg"
+                                onClick={() => handleClickQty(-1 * qty)}
+                            >
+                                X
+                            </button>
+                        </div>
+                        <div className='font-extrabold border-t-2 text-right m-2 pr-4'>
+                            {qty * price} 원
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div> 
-             <button 
-              className="m-1 p-1 text-2xl bg-orange-500 w-8 rounded-lg"
-              onClick={() => handleClickQty(1)}
-              > 
-              + 
-              </button>
-              <button 
-              className="m-1 p-1 text-2xl bg-orange-500 w-8 rounded-lg"
-              onClick={() => handleClickQty(-1)}
-              > 
-              - 
-              </button>
-            </div>
-          </div>
-          <div>
-          <div className="flex text-white font-bold p-2 justify-center">
-            
+        </li>
 
-            <button 
-            className="m-1 p-1 text-xl text-white bg-red-500 w-8 rounded-lg"
-            onClick={() => handleClickQty(-1 * qty)}
-            > 
-            X
-          </button>
-          </div>
-          <div className='font-extrabold border-t-2 text-right m-2 pr-4'>
-            {qty * price} 원
-          </div>
-          </div>
-        </div>
-      </div>
-    </li> 
-  );
+    );
 }
- 
+
 export default CartItemComponent;
 
 
@@ -459,7 +465,7 @@ export default FetchingModal;
 ===========================================================
 src\components\common\PageComponent.js
 ===========================================================
-const PageComponent = ({serverData, movePage}) => {
+const PageComponent = ({serverData, movePage,handleClickPage}) => {
 
   return (  
     <div className="m-6 flex justify-center">
@@ -804,6 +810,7 @@ export default ModifyComponent;
 ===========================================================
 src\components\menus\BasicMenu.js
 ===========================================================
+
 import { Link } from "react-router-dom";
 import useCustomLogin from "../../hooks/useCustomLogin";
 
@@ -873,48 +880,48 @@ import { cartTotalState } from "../../atoms/cartState";
 
 const CartComponent = () => {
 
-  const {isLogin, loginState} = useCustomLogin()
+    const {isLogin, loginState} = useCustomLogin()
 
-  const { cartItems, changeCart } = useCustomCart()
+    const { cartItems, changeCart } = useCustomCart()
 
-  const totalValue = useRecoilValue(cartTotalState)
+    const totalValue = useRecoilValue(cartTotalState)
 
-  return ( 
-  <div className="w-full">
-    {isLogin ?
-    
-    <div className="flex flex-col">
-      
-      <div className="w-full flex">
-        <div className="font-extrabold text-2xl w-4/5">
-          {loginState.nickname}'s Cart
+    return (
+        <div className="w-full">
+            {isLogin ?
+
+                <div className="flex flex-col">
+
+                    <div className="w-full flex">
+                        <div className="font-extrabold text-2xl w-4/5">
+                            {loginState.nickname}'s Cart
+                        </div>
+                        <div className="bg-orange-600 text-center text-white font-bold w-1/5 rounded-full m-1">
+                            {cartItems.length}
+                        </div>
+                    </div>
+
+                    <div>
+                        <ul>
+                            {cartItems.map( item =>
+                                <CartItemComponent {...item}
+                                                   key={item.cino}
+                                                   changeCart ={changeCart}
+                                                   email={loginState.email}/>)}
+                        </ul>
+                    </div>
+
+                    <div className="m-2 text-3xl ">
+                        TOTAL: {totalValue}
+                    </div>
+                </div>
+                :
+                <div></div>
+            }
         </div>
-        <div className="bg-orange-600 text-center text-white font-bold w-1/5 rounded-full m-1">
-          {cartItems.length}
-        </div>
-      </div>
-
-      <div>
-        <ul>
-          {cartItems.map( item => 
-            <CartItemComponent {...item} 
-            key={item.cino} 
-            changeCart ={changeCart} 
-            email={loginState.email}/>)}
-        </ul>
-      </div>
-
-      <div className="m-2 text-3xl ">
-        TOTAL: {totalValue}
-      </div>
-    </div>
-    :
-    <div></div>
-    }
-  </div>
-  );
+    );
 }
- 
+
 export default CartComponent;
 
 
@@ -922,12 +929,12 @@ export default CartComponent;
 src\components\products\AddComponent.js
 ===========================================================
 import { useRef, useState } from "react";
+
 import { postAdd } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import ResultModal from "../common/ResultModal";
 import useCustomMove from "../../hooks/useCustomMove";
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 const initState = {
   pname: '',
@@ -938,23 +945,28 @@ const initState = {
 
 const AddComponent = () => {
 
-  //기본적으로 필요 
   const [product,setProduct] = useState({...initState})
   const uploadRef = useRef()
-  const {moveToList} = useCustomMove()
 
-  //입력값 처리 
+  const {moveToList} = useCustomMove() //이동을 위한 함수
+
+  const addMutation = useMutation(
+      {
+        mutationFn: (product) => postAdd(product)
+      } )
+
+  const queryClient = useQueryClient()
+
   const handleChangeProduct = (e) => {
     product[e.target.name] = e.target.value
     setProduct({...product})
     
   }
 
-  const addMutation = useMutation( (product) => postAdd(product)) //리액트 쿼리 
-
   const handleClickAdd = (e) => {
 
     const files = uploadRef.current.files
+
     const formData = new FormData()
 
     for (let i = 0; i < files.length; i++) {
@@ -966,33 +978,41 @@ const AddComponent = () => {
     formData.append("pdesc", product.pdesc)
     formData.append("price", product.price)
 
-    addMutation.mutate( formData ) //기존 코드에서 변경 
+    console.log(formData)
+
+    // setFetching(true)
+
+    // postAdd(formData).then(data=> {
+    //   setFetching(false)
+    //   setResult(data.result)
+    // })
+
+    addMutation.mutate(formData)
 
   }
-  
-  const queryClient = useQueryClient()
 
-  const closeModal = () => {
+  const closeModal = () => { //ResultModal 종료 
 
     queryClient.invalidateQueries("products/list")
-
-    moveToList({page:1})
+    moveToList({page:1}) //모달 창이 닫히면 이동 
   }
+
 
 
   return ( 
     <div className = "border-2 border-sky-200 mt-10 m-2 p-4"> 
 
-      {addMutation.isLoading ? <FetchingModal/>: <></>}
+      {addMutation.isPending ? <FetchingModal/> :<></>}
 
-      {addMutation.isSuccess ? 
-      <ResultModal 
-        title={'Add Result'} 
-        content={`Add Success ${addMutation.data.result}`}
-        callbackFn={closeModal}/>
-      :
-      <></>
+      {addMutation.isSuccess?
+        <ResultModal 
+        title={'Product Add Result'}
+        content={`${addMutation.data.result}번 등록 완료`}
+        callbackFn ={closeModal}
+        />
+        : <></>
       }
+
 
       <div className="flex justify-center">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">
@@ -1063,65 +1083,54 @@ export default AddComponent;
 ===========================================================
 src\components\products\ListComponent.js
 ===========================================================
+import { useEffect, useState } from "react";
 import { getList } from "../../api/productsApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import FetchingModal from "../common/FetchingModal";
+
 import { API_SERVER_HOST } from "../../api/todoApi";
 import PageComponent from "../common/PageComponent";
 import useCustomLogin from "../../hooks/useCustomLogin";
-import { useQuery } from "@tanstack/react-query";
-
-const initState = {
-  dtoList:[],
-  pageNumList:[],
-  pageRequestDTO: null,
-  prev: false,
-  next: false,
-  totoalCount: 0,
-  prevPage: 0,
-  nextPage: 0,
-  totalPage: 0,
-  current: 0
-}
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 
 const host = API_SERVER_HOST
 
+
 const ListComponent = () => {
 
-  const {moveToLoginReturn} = useCustomLogin()
+  const queryClient = useQueryClient()
 
   const {page, size, refresh, moveToList, moveToRead} = useCustomMove()
 
-  const {isFetching, data, error, isError} = useQuery( 
-    ['products/list' , {page,size, refresh}],   
-    () => getList({page,size}), 
-    {staleTime: 1000 * 5 }  
-  )
-
+  const {exceptionHandle, moveToLoginReturn} = useCustomLogin()
 
   const handleClickPage = (pageParam) => {
 
     // if(pageParam.page === parseInt(page)){
     //   queryClient.invalidateQueries("products/list")
     // }
-    
     moveToList(pageParam)
+  }
 
-}
+  const {data, isFetching, error, isError} = useQuery({
+    queryKey: ['products/list', {page,size, refresh}],
+    queryFn: () => getList({page,size}),
+    staleTime: 1000 * 60
+  })
 
-
-  if(isError) {
-    console.log(error)
+  if(isError){
     return moveToLoginReturn()
   }
 
-  const serverData = data || initState
+  if(isFetching){
+    return <FetchingModal/>
+  }
+
+  const serverData = data
 
   return ( 
     <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
-  
-  {isFetching? <FetchingModal/> :<></>}
-  
+
       <div className="flex flex-wrap mx-auto p-6">
   
         {serverData.dtoList.map(product =>
@@ -1174,12 +1183,13 @@ export default ListComponent;
 src\components\products\ModifyComponent.js
 ===========================================================
 import { useEffect, useRef, useState } from "react";
-import { deleteOne, getOne, putOne } from "../../api/productsApi";
-import FetchingModal from "../common/FetchingModal";
+import {deleteOne, getOne, putOne} from "../../api/productsApi";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import useCustomMove from "../../hooks/useCustomMove";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import FetchingModal from "../common/FetchingModal";
 import ResultModal from "../common/ResultModal";
+
 
 const initState = {
   pno:0,
@@ -1194,27 +1204,38 @@ const host = API_SERVER_HOST
 
 const ModifyComponent = ({pno}) => {
 
-  const {moveToList, moveToRead} = useCustomMove()
+  const queryClient = useQueryClient()
+
+  const delMutation = useMutation({mutationFn: (pno) => deleteOne(pno)})
+  const modMutation = useMutation({mutationFn: (product) => putOne(pno, product)})
+
+  //이동용 함수
+  const {moveToRead, moveToList} = useCustomMove()
+
   const [product, setProduct] = useState(initState)
+
+  const [fetching, setFetching] = useState(false)
+
+  const [result, setResult] = useState()
 
   const uploadRef = useRef()
 
-  const query = useQuery(
-    ['products', pno],
-    () => getOne(pno),
-    {
-      staleTime: Infinity
-    }
-  )
+  const query = useQuery({
+    queryKey: ['products', pno],
+    queryFn: () => getOne(pno),
+    staleTime: Infinity,
+
+
+  })
 
   useEffect(() => {
 
-    if(query.isSuccess){
+    if(query.isSuccess) {
       setProduct(query.data)
+
     }
 
-  },[pno, query.data, query.isSuccess])
-
+  }, [pno, query.data, query.isSuccess]);
 
   const handleChangeProduct = (e) => {
 
@@ -1232,17 +1253,6 @@ const ModifyComponent = ({pno}) => {
     setProduct({...product})
   }
 
-  const delMutation = useMutation((pno) => deleteOne(pno))
-
-  const queryClient = useQueryClient()
-
-  const handleClickDelete = () => {
-
-    delMutation.mutate(pno)
-
-  }
-
-  const modMutation = useMutation((product) => putOne(pno, product))
 
   const handleClickModify = () => {
 
@@ -1263,11 +1273,15 @@ const ModifyComponent = ({pno}) => {
     for( let i = 0; i < product.uploadFileNames.length ; i++){
       formData.append("uploadFileNames", product.uploadFileNames[i])
     }
-
     modMutation.mutate(formData)
   
   }
 
+  const handleClickDelete = () => {
+
+    delMutation.mutate(pno)
+
+  }
 
   const closeModal = () => {
 
@@ -1275,7 +1289,7 @@ const ModifyComponent = ({pno}) => {
       queryClient.invalidateQueries(['products', pno])
       queryClient.invalidateQueries(['products/list'])
       moveToList()
-      return
+
     }
 
     if(modMutation.isSuccess) {
@@ -1284,33 +1298,29 @@ const ModifyComponent = ({pno}) => {
       moveToRead(pno)
     }
 
+
+
   }
 
 
 
+
   return ( 
-  <div className = "border-2 border-sky-200 mt-10 m-2 p-4"> 
+  <div className = "border-2 border-sky-200 mt-10 m-2 p-4">
 
-
-{query.isFetching || delMutation.isLoading || modMutation.isLoading ? 
-    <FetchingModal/>
-    :
-    <></>
-    }
+    {query.isFetching || delMutation.isPending || modMutation.isPending ? <FetchingModal/>:<></>}
 
     {
-      delMutation.isSuccess || modMutation.isSuccess ?
-      <ResultModal
-      title={'처리 결과'}
-      content={'정상적으로 처리되었습니다.'}
-      callbackFn={closeModal}>
+      delMutation.isSuccess || modMutation.isSuccess?
+          <ResultModal
+              title={'처리 결과'}
+              content={'정상적으로 처리되었습니다.'}
+              callbackFn={closeModal}>
 
-      </ResultModal>
-      :
-      <></>
+          </ResultModal>
+          :
+          <></>
     }
-
-
 
 
     <div className="flex justify-center">
@@ -1437,67 +1447,60 @@ src\components\products\ReadComponent.js
 ===========================================================
 import  {getOne} from "../../api/productsApi"
 import { API_SERVER_HOST } from "../../api/todoApi"
-import useCustomCart from "../../hooks/useCustomCart"
-import useCustomLogin from "../../hooks/useCustomLogin"
 import useCustomMove from "../../hooks/useCustomMove"
 import FetchingModal from "../common/FetchingModal"
-import { useQuery } from "@tanstack/react-query"
-
-const initState = {
-  pno:0,
-  pname: '',
-  pdesc: '',
-  price: 0,
-  uploadFileNames:[]
-}
+import useCustomCart from "../../hooks/useCustomCart";
+import useCustomLogin from "../../hooks/useCustomLogin";
+import {useQuery} from "@tanstack/react-query";
 
 const host = API_SERVER_HOST
 
-const ReadComponent = ({pno }) => {
+const ReadComponent = ({pno}) => {
 
+  //화면 이동용 함수
   const {moveToList, moveToModify} = useCustomMove()
 
-  const {loginState} = useCustomLogin()
-  
+  //현재 사용자의 장바구니 아이템들
   const {cartItems, changeCart} = useCustomCart()
 
+  const {loginState} = useCustomLogin()
 
-  const {isFetching, data } = useQuery( 
-    ['products', pno],
-    ( ) => getOne(pno), 
-    {
-      staleTime: 1000 * 10 * 60,
-      retry: 1
-    }
-  )
 
-  
+  const {data, isFetching} = useQuery({
+    queryKey: ['products', pno],
+    queryFn: () => getOne(pno),
+    staleTime: 1000 * 10
+
+  })
+
+
   const handleClickAddCart = () => {
 
     let qty = 1
 
     const addedItem = cartItems.filter(item => item.pno === parseInt(pno))[0]
 
-    if(addedItem) {
-      if(window.confirm("이미 추가된 상품입니다. 추가하시겠습니까? ") === false) {
-        return 
+    if(addedItem){
+      if(window.confirm('이미 추가된 상품입니다. 추가하시겠습니까?') === false){
+        return
       }
       qty = addedItem.qty + 1
     }
 
-    changeCart({email:loginState.email, pno:pno, qty:qty})
+    changeCart({email: loginState.email, qty:qty, pno:pno})
 
   }
 
+  if(isFetching) {
+    return <FetchingModal/>
+  }
 
-  const product = data || initState
+  const product = data
 
 
   return (  
 
     <div className = "border-2 border-sky-200 mt-10 m-2 p-4"> 
-
-{isFetching? <FetchingModal/> :<></>}  
 
       <div className="flex justify-center mt-10">
         <div className="relative mb-4 flex w-full flex-wrap items-stretch">
@@ -1543,13 +1546,13 @@ const ReadComponent = ({pno }) => {
       </div>
       
       <div className="flex justify-end p-4">
-        <button type="button" 
-          className="inline-block rounded p-4 m-2 text-xl w-32  text-white bg-green-500"
-          onClick={handleClickAddCart}
+        <button type="button"
+                className="inline-block rounded p-4 m-2 text-xl w-32  text-white bg-green-500"
+                onClick={handleClickAddCart}
+
         >
           Add Cart
         </button>
-
         <button type="button" 
           className="inline-block rounded p-4 m-2 text-xl w-32  text-white bg-red-500"
           onClick={() => moveToModify(pno)}
@@ -2008,7 +2011,7 @@ export default ReadComponent
 ===========================================================
 src\hooks\useCustomCart.js
 ===========================================================
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
 import { getCartItems, postChangeCart } from "../api/cartApi"
 import { useRecoilState } from "recoil"
 import { cartState } from "../atoms/cartState"
@@ -2017,34 +2020,36 @@ import { useEffect } from "react"
 
 const useCustomCart = () => {
 
-  const [cartItems,setCartItems] = useRecoilState(cartState)
+    const [cartItems, setCartItems] = useRecoilState(cartState)
 
-  const queryClient = useQueryClient()
+    const queryClient = useQueryClient()
 
-  const changeMutation = useMutation((param)  => postChangeCart(param), {onSuccess: (result) => {
-    setCartItems(result)
-  }})
+    const changeMutation = useMutation(
+        {
+            mutationFn: (param)  => postChangeCart(param),
+            onSuccess: (result) => setCartItems(result)
 
-  const query = useQuery(["cart"], getCartItems, {staleTime: 1000 * 60 * 60}) // 1 hour 
+        })
 
-  useEffect(() => {
 
-    if(query.isSuccess ) {
+    const query = useQuery({ queryKey: ["cart"], queryFn: getCartItems, staleTime: 1000 * 60 * 60 }) // 1 hour
 
-      queryClient.invalidateQueries("cart")
-      setCartItems(query.data)
+    useEffect(() => {
 
+        if(query.isSuccess ) {
+
+            queryClient.invalidateQueries("cart")
+            setCartItems(query.data)
+
+        }
+
+    },[query.isSuccess])
+
+    const changeCart = (param) => {
+        changeMutation.mutate(param)
     }
 
-
-  },[query.isSuccess])
-
-
-  const changeCart = (param) => {
-    changeMutation.mutate(param)
-  }
-
-  return  {cartItems, changeCart}
+    return  {cartItems, changeCart}
 
 }
 
@@ -2059,7 +2064,8 @@ import { useRecoilState, useResetRecoilState } from "recoil"
 import signinState from "../atoms/signinState"
 import { loginPost } from "../api/memberApi"
 import { removeCookie, setCookie } from "../util/cookieUtil"
-import { cartState } from "../atoms/cartState"
+import {cartState} from "../atoms/cartState";
+
 
 const useCustomLogin = ( ) => {
 
@@ -2069,12 +2075,11 @@ const useCustomLogin = ( ) => {
 
   const resetState = useResetRecoilState(signinState)
 
-  const resetCartState = useResetRecoilState(cartState) //장바구니 비우기 
+  const resetCartState = useResetRecoilState(cartState) //장바구니 비우기
 
+  const isLogin = loginState.email ? true :false //----------로그인 여부
 
-  const isLogin = loginState.email ? true :false //----------로그인 여부 
-
-  const doLogin = async (loginParam) => { //----------로그인 함수 
+  const doLogin = async (loginParam) => { //----------로그인 함수
 
     const result =  await loginPost(loginParam)
 
@@ -2086,21 +2091,21 @@ const useCustomLogin = ( ) => {
   }
 
   const saveAsCookie = (data) => {
-    
+
     setCookie("member",JSON.stringify(data), 1) //1일
 
     setLoginState(data)
-    
   }
 
-  const doLogout = () => { //---------------로그아웃 함수 
 
-    removeCookie('member') 
+  const doLogout = () => { //---------------로그아웃 함수
+
+    removeCookie('member')
     resetState()
     resetCartState()
+
+
   }
-
-
 
   const exceptionHandle = (ex) => {
 
@@ -2181,8 +2186,8 @@ const useCustomMove = () => {
 
     if(pageParam){
 
-      const pageNum = getNum(pageParam.page, page)
-      const sizeNum = getNum(pageParam.size, size)
+      const pageNum = getNum(pageParam.page, 1)
+      const sizeNum = getNum(pageParam.size, 10)
 
       queryStr = createSearchParams({page:pageNum, size: sizeNum}).toString()
     }else {
@@ -2244,16 +2249,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { Provider } from 'react-redux';
-import store from './store'
-import { RecoilRoot } from 'recoil';
+import {RecoilRoot} from "recoil";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 
-    <RecoilRoot>
-        <App />
-    </RecoilRoot>
+        <RecoilRoot>
+            <App/>
+        </RecoilRoot>
 );
 
 reportWebVitals();
@@ -2352,6 +2355,8 @@ src\pages\member\KakaoRedirectPage.js
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAccessToken, getMemberWithAccessToken } from "../../api/kakaoApi";
+import { useDispatch } from "react-redux";
+import { login } from "../../slices/loginSlice";
 import useCustomLogin from "../../hooks/useCustomLogin";
 
 const KakaoRedirectPage = () => {
@@ -2968,47 +2973,60 @@ import '@testing-library/jest-dom';
 ===========================================================
 src\slices\cartSlice.js
 ===========================================================
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getCartItems, postChangeCart } from "../api/cartApi";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {getCartItems, postChangeCart} from "../api/cartApi";
 
-export const getCartItemsAsync = createAsyncThunk('getCartItemsAsync', () => {
 
-  return getCartItems()
-
+export const  getCartItemsAsync = createAsyncThunk('getCartItemsAsync', () => {
+    return getCartItems()
 })
 
-export const postChangeCartAsync = createAsyncThunk('postCartItemsAsync', (param) => {
+export const postChangeCartAsync = createAsyncThunk('postChangeCartAsync', (param)=>{
 
-  return postChangeCart(param)
-
+    return postChangeCart(param)
 })
 
 const initState = []
 
 const cartSlice = createSlice({
-  name: 'cartSlice',
-  initialState: initState,
+    name:'cartSlice',
+    initialState: initState,
 
-  extraReducers: (builder) => {
-    builder.addCase( 
-      getCartItemsAsync.fulfilled, (state, action) => { 
-        console.log("getCartItemsAsync fulfilled")
+    extraReducers: (builder) => {
 
-        return action.payload
-      }
-    )
-    .addCase(
-      postChangeCartAsync.fulfilled, (state, action) => {
+        builder.addCase(getCartItemsAsync.fulfilled, (state, action) => {
 
-        console.log("postCartItemsAsync fulfilled")
+            console.log("getCartItemsAsync.fulfilled")
+            console.log(action.payload)
 
-        return action.payload
-      }
-    )
-  }
+            if(action.payload.error){
+
+            }
+
+            return action.payload
+
+        })
+        .addCase(postChangeCartAsync.fulfilled, (state, action) => {
+
+            console.log("postChangeCartAsync.fulfilled")
+            console.log(action)
+
+            return action.payload
+
+        })
+
+
+    }
 })
 
 export default cartSlice.reducer
+
+
+
+
+
+
+
 
 
 ===========================================================
@@ -3051,6 +3069,7 @@ const loginSlice = createSlice({
 
       //{소셜로그인 회원이 사용}
       const payload = action.payload
+      
 
     
       setCookie("member",JSON.stringify(payload), 1) //1일
@@ -3072,9 +3091,9 @@ const loginSlice = createSlice({
       const payload = action.payload
 
       //닉네임 한글 처리 
-      // if(payload.nickname){
-      //   payload.nickname = encodeURIComponent(payload.nickname)
-      // }
+      if(payload.nickname){
+        payload.nickname = encodeURIComponent(payload.nickname)
+      }
 
       //정상적인 로그인시에만 저장 
       if(!payload.error){
@@ -3104,12 +3123,12 @@ src\store.js
 ===========================================================
 import { configureStore } from '@reduxjs/toolkit'
 import loginSlice from './slices/loginSlice'
-import cartSlice from './slices/cartSlice'
+import cartSlice from "./slices/cartSlice";
 
 export default configureStore({
   reducer: { 
     "loginSlice": loginSlice,
-    "cartSlice" : cartSlice
+    "cartSlice": cartSlice
   }
 })
 
