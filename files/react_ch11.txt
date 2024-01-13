@@ -638,9 +638,12 @@ const initState = {
 const ModifyComponent = () => {
 
   const [member, setMember] = useState(initState)
-  const loginInfo = useSelector(state => state.loginSlice)
 
-  const {moveToLogin} = useCustomLogin()
+  //const loginInfo = useSelector(state => state.loginSlice)
+
+  const {moveToLogin,loginState} = useCustomLogin()
+
+  const loginInfo = loginState
 
   const [result, setResult] = useState()
 
